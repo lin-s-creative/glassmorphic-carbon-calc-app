@@ -89,7 +89,6 @@ body {
 .main {
   position: relative;
   z-index: 1;
-  max-width: 600px;
   margin: 0 auto;
   padding: 20px;
 }
