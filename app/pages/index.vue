@@ -3,9 +3,7 @@
     <div class="hero-card">
       <h2>Калькулятор углеродного следа</h2>
       <p>Ответь на несколько вопросов о транспорте, питании и энергии — и получи персональный результат с рекомендациями по улучшению</p>
-      <button class="btn">
-        Калькулятор тут будет
-      </button>
+      <NuxtLink to="/calculator" class="btn">Начать расчёт</NuxtLink>
       <div class="features">
         <div class="feature">
           <span>Транспорт</span>
