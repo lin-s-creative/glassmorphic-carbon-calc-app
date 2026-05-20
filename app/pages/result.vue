@@ -1,6 +1,6 @@
 <template>
   <div class="result-page">
-    <div class="card">
+    <div v-if="result" class="card">
       <h2>Твой углеродный след</h2>
       <p>за неделю</p>
 
@@ -29,15 +29,21 @@
         <NuxtLink to="/" class="btn btn-outline">На главную</NuxtLink>
       </div>
     </div>
+
+    <div v-else class="card">
+      <p>Нет данных. Пройдите расчёт.</p>
+      <NuxtLink to="/calculator" class="btn">Пройти расчёт</NuxtLink>
+    </div>
   </div>
 </template>
 
 <script setup>
-const { totalCO2, carKm, planeKm, meatMeals, vegMeals, electricity, gas } = useCarbon()
+const result = useState('result')
 
-const transportCO2 = computed(() => carKm.value * 0.12 + planeKm.value * 0.25)
-const foodCO2 = computed(() => meatMeals.value * 7.0 + vegMeals.value * 0.8)
-const energyCO2 = computed(() => electricity.value * 0.5 + gas.value * 2.0)
+const totalCO2 = computed(() => result.value?.totalCO2 || 0)
+const transportCO2 = computed(() => result.value?.transportCO2 || 0)
+const foodCO2 = computed(() => result.value?.foodCO2 || 0)
+const energyCO2 = computed(() => result.value?.energyCO2 || 0)
 </script>
 
 <style scoped>
@@ -113,6 +119,7 @@ const energyCO2 = computed(() => electricity.value * 0.5 + gas.value * 2.0)
   text-decoration: none;
   font-weight: 600;
   border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s;
 }
 
 .btn:hover {

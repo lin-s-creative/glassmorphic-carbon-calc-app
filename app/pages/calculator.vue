@@ -36,15 +36,51 @@
       </div>
     </div>
 
+    <p v-if="error" class="error">{{ error }}</p>
+
     <div class="actions">
-      <NuxtLink to="/result" class="btn">Рассчитать результат</NuxtLink>
+      <button @click="calculate" :disabled="loading" class="btn">
+        {{ loading ? 'Считаем...' : 'Рассчитать результат' }}
+      </button>
       <NuxtLink to="/" class="btn btn-outline">На главную</NuxtLink>
     </div>
   </div>
 </template>
 
 <script setup>
+const user = useState('user', () => null)
 const { carKm, planeKm, meatMeals, vegMeals, electricity, gas } = useCarbon()
+
+const loading = ref(false)
+const error = ref(null)
+const result = useState('result', () => null)
+
+async function calculate() {
+  loading.value = true
+  error.value = null
+
+  try {
+    const data = await $fetch('/api/calculate', {
+      method: 'POST',
+      body: {
+        carKm: carKm.value,
+        planeKm: planeKm.value,
+        meatMeals: meatMeals.value,
+        vegMeals: vegMeals.value,
+        electricity: electricity.value,
+        gas: gas.value,
+        userId: user.value?.id || null
+      }
+    })
+
+    result.value = data
+    await navigateTo('/result')
+  } catch (e) {
+    error.value = e.data?.message || e.message || 'Что-то пошло не так'
+  } finally {
+    loading.value = false
+  }
+}
 </script>
 
 <style scoped>
@@ -93,6 +129,14 @@ const { carKm, planeKm, meatMeals, vegMeals, electricity, gas } = useCarbon()
   border-color: rgba(255, 255, 255, 0.4);
 }
 
+.error {
+  color: #ff6b6b;
+  background: rgba(255, 107, 107, 0.1);
+  padding: 10px 16px;
+  border-radius: 10px;
+  margin-bottom: 16px;
+}
+
 .actions {
   display: flex;
   gap: 12px;
@@ -108,10 +152,17 @@ const { carKm, planeKm, meatMeals, vegMeals, electricity, gas } = useCarbon()
   font-weight: 600;
   border: 1px solid rgba(255, 255, 255, 0.2);
   transition: all 0.3s;
+  cursor: pointer;
+  font-size: 0.95rem;
 }
 
 .btn:hover {
   background: rgba(255, 255, 255, 0.2);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .btn-outline {
