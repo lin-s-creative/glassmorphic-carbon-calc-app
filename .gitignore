@@ -25,5 +25,3 @@ logs
 
 # Prisma
 /app/generated/prisma
-prisma/dev.db
-prisma/dev.db-journal
