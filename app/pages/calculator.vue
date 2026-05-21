@@ -1,48 +1,75 @@
 <template>
   <div class="calculator">
-    <div class="card">
+    <div class="card glass-card">
+      <div class="section-icon">
+        <i class="fas fa-car"></i>
+      </div>
       <h2>Транспорт</h2>
       <div class="field">
         <label>Км на машине в неделю</label>
-        <input v-model="carKm" type="number" min="0" placeholder="0" />
+        <div class="input-wrapper">
+          <input v-model="carKm" type="number" min="0" placeholder="0" />
+          <span class="unit">км</span>
+        </div>
       </div>
       <div class="field">
-        <label>Км на самолёте в неделю</label>
-        <input v-model="planeKm" type="number" min="0" placeholder="0" />
+        <label>Км на самолёте в неделю (в среднем)</label>
+        <div class="input-wrapper">
+          <input v-model="planeKm" type="number" min="0" placeholder="0" />
+          <span class="unit">км</span>
+        </div>
       </div>
     </div>
-
-    <div class="card">
+    <div class="card glass-card">
+      <div class="section-icon">
+        <i class="fas fa-utensils"></i>
+      </div>
       <h2>Питание</h2>
       <div class="field">
         <label>Мясных приёмов пищи в неделю</label>
-        <input v-model="meatMeals" type="number" min="0" placeholder="0" />
+        <div class="input-wrapper">
+          <input v-model="meatMeals" type="number" min="0" placeholder="0" />
+          <span class="unit">раз</span>
+        </div>
       </div>
       <div class="field">
         <label>Растительных приёмов пищи в неделю</label>
-        <input v-model="vegMeals" type="number" min="0" placeholder="0" />
+        <div class="input-wrapper">
+          <input v-model="vegMeals" type="number" min="0" placeholder="0" />
+          <span class="unit">раз</span>
+        </div>
       </div>
     </div>
-
-    <div class="card">
+    <div class="card glass-card">
+      <div class="section-icon">
+        <i class="fas fa-bolt"></i>
+      </div>
       <h2>Энергия</h2>
       <div class="field">
         <label>кВт⋅ч электричества в неделю</label>
-        <input v-model="electricity" type="number" min="0" placeholder="0" />
+        <div class="input-wrapper">
+          <input v-model="electricity" type="number" min="0" placeholder="0" />
+          <span class="unit">кВт⋅ч</span>
+        </div>
       </div>
       <div class="field">
         <label>м³ газа в неделю</label>
-        <input v-model="gas" type="number" min="0" placeholder="0" />
+        <div class="input-wrapper">
+          <input v-model="gas" type="number" min="0" placeholder="0" />
+          <span class="unit">м³</span>
+        </div>
       </div>
     </div>
-
     <p v-if="error" class="error">{{ error }}</p>
-
     <div class="actions">
-      <button @click="calculate" :disabled="loading" class="btn">
-        {{ loading ? 'Считаем...' : 'Рассчитать результат' }}
+      <button @click="calculate" :disabled="loading" class="btn calc-btn">
+        <span v-if="!loading">Рассчитать результат</span>
+        <span v-else class="loading-text">
+          <span class="spinner"></span>
+          Считаем...
+        </span>
       </button>
-      <NuxtLink to="/" class="btn btn-outline">На главную</NuxtLink>
+      <NuxtLink to="/" class="btn btn-outline">← На главную</NuxtLink>
     </div>
   </div>
 </template>
@@ -58,9 +85,8 @@ const result = useState('result', () => null)
 async function calculate() {
   loading.value = true
   error.value = null
-
   try {
-    const data = await $fetch('/api/calculate', {
+    result.value = await $fetch('/api/calculate', {
       method: 'POST',
       body: {
         carKm: carKm.value,
@@ -72,8 +98,6 @@ async function calculate() {
         userId: user.value?.id || null
       }
     })
-
-    result.value = data
     await navigateTo('/result')
   } catch (e) {
     error.value = e.data?.message || e.message || 'Что-то пошло не так'
@@ -85,87 +109,105 @@ async function calculate() {
 
 <style scoped>
 .calculator {
+  margin: 0 auto;
   padding: 20px 0;
+  max-width: 600px;
 }
 
-.card {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
-  padding: 30px;
-  margin-bottom: 20px;
+.glass-card {
+  position: relative;
+  overflow: hidden;
 }
 
-.card h2 {
-  color: #ffffff;
-  margin-bottom: 20px;
-  font-size: 1.4rem;
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(167, 139, 250, 0.05), rgba(96, 165, 250, 0.05));
+  pointer-events: none;
+}
+
+.section-icon {
+  font-size: 2rem;
+  margin-bottom: 10px;
 }
 
 .field {
-  margin-bottom: 18px;
+  margin-bottom: 20px;
 }
 
 .field label {
   display: block;
-  margin-bottom: 6px;
-  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 8px;
   font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
 }
 
-.field input {
-  width: 100%;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: #ffffff;
-  padding: 12px 16px;
-  border-radius: 12px;
-  font-size: 1rem;
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
 }
 
-.field input:focus {
-  outline: none;
-  border-color: rgba(255, 255, 255, 0.4);
+.input-wrapper input {
+  flex: 1;
+  padding-right: 50px;
 }
 
-.error {
-  color: #ff6b6b;
-  background: rgba(255, 107, 107, 0.1);
-  padding: 10px 16px;
-  border-radius: 10px;
-  margin-bottom: 16px;
+.unit {
+  position: absolute;
+  right: 16px;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.85rem;
+  pointer-events: none;
 }
 
 .actions {
   display: flex;
   gap: 12px;
+  align-items: center;
+  margin-top: 10px;
 }
 
-.btn {
-  display: inline-block;
-  background: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
-  padding: 14px 28px;
-  border-radius: 30px;
-  text-decoration: none;
-  font-weight: 600;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  transition: all 0.3s;
-  cursor: pointer;
-  font-size: 0.95rem;
+.calc-btn {
+  background: linear-gradient(135deg, rgba(167, 139, 250, 0.4), rgba(96, 165, 250, 0.4));
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  min-width: 220px;
 }
 
-.btn:hover {
-  background: rgba(255, 255, 255, 0.2);
+.calc-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, rgba(167, 139, 250, 0.6), rgba(96, 165, 250, 0.6));
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
-.btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+.loading-text {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.btn-outline {
-  background: transparent;
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.error {
+  color: #ff6b6b;
+  background: rgba(255, 107, 107, 0.1);
+  padding: 12px 16px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  border: 1px solid rgba(255, 107, 107, 0.2);
 }
 </style>

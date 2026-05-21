@@ -1,6 +1,10 @@
 <template>
   <div class="app">
+    <div v-if="!showContent" class="app-loader-overlay">
+      <CO2Spinner />
+    </div>
     <div class="static-bg"></div>
+    <CO2Molecule v-show="moleculeReady" @ready="onMoleculeReady" />
     <header class="header glass">
       <h1>Калькулятор углеродного следа</h1>
       <nav>
@@ -18,6 +22,21 @@
   </div>
 </template>
 
+<script setup>
+const showContent = ref(false)
+const moleculeReady = ref(false)
+
+onMounted(() => {
+  nextTick(() => {
+    showContent.value = true
+  })
+})
+
+function onMoleculeReady() {
+  moleculeReady.value = true
+}
+</script>
+
 <style>
 * {
   margin: 0;
@@ -32,6 +51,11 @@ body {
   background: #0a0a2e;
 }
 
+.app {
+  min-height: 100vh;
+  position: relative;
+}
+
 .static-bg {
   position: fixed;
   top: 0;
@@ -39,7 +63,24 @@ body {
   width: 100%;
   height: 100%;
   z-index: -2;
-  background: radial-gradient(ellipse at center, #1a1a4e 0%, #0a0a2e 70%);
+  background: radial-gradient(ellipse at center, #262632 0%, #0c0c1e 70%);
+}
+
+.app-loader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse at center, #262632 0%, #0c0c1e 70%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+@keyframes rotate-molecule {
+  to { transform: rotate(360deg); }
 }
 
 .glass {
@@ -191,7 +232,6 @@ body {
   font-size: 2.5rem;
   font-weight: bold;
   background: linear-gradient(135deg, #a78bfa, #60a5fa);
-  -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   display: block;
 }

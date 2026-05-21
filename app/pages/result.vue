@@ -1,37 +1,53 @@
 <template>
   <div class="result-page">
-    <div v-if="result" class="card">
+    <div v-if="result" class="card glass-card">
+      <div class="result-icon">
+        <i class="fas fa-globe"></i>
+      </div>
       <h2>Твой углеродный след</h2>
-      <p>за неделю</p>
-
+      <p class="subtitle">за неделю</p>
       <div class="breakdown">
         <div class="item">
+          <span class="icon">
+            <i class="fas fa-car"></i>
+          </span>
           <span>Транспорт</span>
           <span class="value">{{ transportCO2.toFixed(1) }} кг</span>
         </div>
         <div class="item">
+          <span class="icon">
+            <i class="fas fa-utensils"></i>
+          </span>
           <span>Питание</span>
           <span class="value">{{ foodCO2.toFixed(1) }} кг</span>
         </div>
         <div class="item">
+          <span class="icon">
+            <i class="fas fa-bolt"></i>
+          </span>
           <span>Энергия</span>
           <span class="value">{{ energyCO2.toFixed(1) }} кг</span>
         </div>
       </div>
-
       <div class="total">
         <span class="total-number">{{ totalCO2.toFixed(1) }}</span>
-        кг CO₂ в неделю
+        <span class="total-unit">кг CO₂ в неделю</span>
       </div>
-
       <div class="actions">
-        <NuxtLink to="/calculator" class="btn">Пересчитать</NuxtLink>
-        <NuxtLink to="/" class="btn btn-outline">На главную</NuxtLink>
+        <NuxtLink to="/calculator" class="btn">
+          ← Пересчитать
+        </NuxtLink>
+        <NuxtLink to="/stats" class="btn btn-outline">
+          <i class="fas fa-chart-line"></i> Статистика
+        </NuxtLink>
       </div>
     </div>
-
-    <div v-else class="card">
-      <p>Нет данных. Пройдите расчёт.</p>
+    <div v-else class="card glass-card empty-state">
+      <div class="empty-icon">
+        <i class="fas fa-inbox"></i>
+      </div>
+      <h2>Нет данных</h2>
+      <p>Вы ещё не прошли расчёт</p>
       <NuxtLink to="/calculator" class="btn">Пройти расчёт</NuxtLink>
     </div>
   </div>
@@ -49,49 +65,63 @@ const energyCO2 = computed(() => result.value?.energyCO2 || 0)
 <style scoped>
 .result-page {
   padding: 20px 0;
+  max-width: 500px;
+  margin: 0 auto;
 }
 
-.card {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
-  padding: 30px;
+.glass-card {
   text-align: center;
 }
 
-.card h2 {
-  color: #ffffff;
-  margin-bottom: 8px;
+.result-icon {
+  font-size: 3.5rem;
+  margin-bottom: 10px;
+  animation: float 3s ease-in-out infinite;
 }
 
-.card p {
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+.subtitle {
   color: rgba(255, 255, 255, 0.5);
   margin-bottom: 24px;
+  font-size: 0.95rem;
 }
 
 .breakdown {
   margin: 24px 0;
+  text-align: left;
 }
 
 .item {
   display: flex;
-  justify-content: space-between;
+  align-items: center;
   padding: 14px 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.8);
+  font-size: 1rem;
+}
+
+.icon {
+  font-size: 1.4rem;
+  margin-right: 14px;
+  width: 32px;
+  display: inline-flex;
+  justify-content: center;
 }
 
 .value {
+  margin-left: auto;
   font-weight: bold;
   color: #ffffff;
+  font-size: 1.1rem;
 }
 
 .total {
   margin-top: 28px;
   padding-top: 24px;
   border-top: 1px solid rgba(255, 255, 255, 0.15);
-  color: rgba(255, 255, 255, 0.6);
 }
 
 .total-number {
@@ -100,6 +130,14 @@ const energyCO2 = computed(() => result.value?.energyCO2 || 0)
   background: linear-gradient(135deg, #a78bfa, #60a5fa);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  display: block;
+  line-height: 1.2;
+}
+
+.total-unit {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 1rem;
+  margin-top: 4px;
   display: block;
 }
 
@@ -110,23 +148,24 @@ const energyCO2 = computed(() => result.value?.energyCO2 || 0)
   margin-top: 28px;
 }
 
-.btn {
-  display: inline-block;
-  background: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
-  padding: 14px 28px;
-  border-radius: 30px;
-  text-decoration: none;
-  font-weight: 600;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  transition: all 0.3s;
+.empty-state {
+  padding: 50px 30px;
 }
 
-.btn:hover {
-  background: rgba(255, 255, 255, 0.2);
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 16px;
 }
 
-.btn-outline {
-  background: transparent;
+.empty-state h2 {
+  margin-bottom: 8px;
+}
+
+.empty-state p {
+  margin-bottom: 24px;
+}
+
+.btn i {
+  margin-right: 6px;
 }
 </style>
